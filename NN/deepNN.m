@@ -25,41 +25,61 @@ augimds = augmentedImageDatastore(imageSize,trainX,trainY,'DataAugmentation',ima
 layers = [
     imageInputLayer([28 28 1])
 
-    convolution2dLayer(3,8,'Padding',1)
+    convolution2dLayer(3,32,'Padding',1)
     batchNormalizationLayer
-    reluLayer
-    dropoutLayer
-    
+    reluLayer    
     maxPooling2dLayer(2,'Stride',2)
     
-    convolution2dLayer(3,16,'Padding',1)
+    convolution2dLayer(3,32,'Padding',1)
     batchNormalizationLayer
-    reluLayer
-    dropoutLayer
-    
+    reluLayer    
     maxPooling2dLayer(2,'Stride',2)
     
     convolution2dLayer(3,32,'Padding',1)
     batchNormalizationLayer
     reluLayer
+    maxPooling2dLayer(2,'Stride',2)
+    
+    convolution2dLayer(3,64,'Padding',1)
+    batchNormalizationLayer
+    reluLayer    
+    maxPooling2dLayer(2,'Stride',2)
     
     fullyConnectedLayer(10)
+    
     softmaxLayer
     classificationLayer];
 
 %Define training options
 options = trainingOptions('sgdm', ...
-    'MaxEpochs',5, ...
-    'InitialLearnRate',0.03,'L2Regularization',0.0005,'LearnRateSchedule','piecewise',...
+    'MaxEpochs',500, ...
+    'InitialLearnRate',0.03,'LearnRateSchedule','piecewise',...
+    'LearnRateDropPeriod', 1,'LearnRateDropFactor', 0.8,...
+    'L2Regularization',0.0005,...    
     'Verbose',true, ...
     'ValidationData', {testX,testY},...
-    'ValidationPatience', 10, ...
+    'ValidationPatience', 50, ...
     'Plots','training-progress');
 
 %Train network
-%net = trainNetwork(augimds,layers,options);
+net = trainNetwork(augimds,layers,options);
 
 %Classify and compute accuracy
 YPred = classify(net,testX);
 
 errorRate = 1- sum(YPred == testY)/numel(testY)
+
+for i = 1:numel(testY)
+    if YPred(i) ~= testY(i)
+        if doplot
+            plotWrongClassification(i,testX(:,:,1,i),testY(i),YPred(i));
+        end
+    end
+end
+            
+            
+function plotWrongClassification(testSampleIndex, X,realLabel, classifiedLabel)
+    figure(testSampleIndex)
+    imagesc(X');
+    title("realLabel: " + (int32(realLabel)-1) + ", classifiedLabel: " + (int32(classifiedLabel)-1));
+end
