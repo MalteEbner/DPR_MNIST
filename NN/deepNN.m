@@ -1,4 +1,5 @@
 close all
+doplot = false
 
 % Load data
 d = load('../mnist.mat');
@@ -25,25 +26,31 @@ augimds = augmentedImageDatastore(imageSize,trainX,trainY,'DataAugmentation',ima
 layers = [
     imageInputLayer([28 28 1])
 
-    convolution2dLayer(3,32,'Padding',1)
+    convolution2dLayer(4,64,'Padding',1)
     batchNormalizationLayer
     reluLayer    
-    maxPooling2dLayer(2,'Stride',2)
-    
-    convolution2dLayer(3,32,'Padding',1)
-    batchNormalizationLayer
-    reluLayer    
-    maxPooling2dLayer(2,'Stride',2)
-    
-    convolution2dLayer(3,32,'Padding',1)
-    batchNormalizationLayer
-    reluLayer
     maxPooling2dLayer(2,'Stride',2)
     
     convolution2dLayer(3,64,'Padding',1)
     batchNormalizationLayer
     reluLayer    
     maxPooling2dLayer(2,'Stride',2)
+    
+    convolution2dLayer(2,64,'Padding',1)
+    dropoutLayer(0.6)
+    batchNormalizationLayer
+    reluLayer
+    maxPooling2dLayer(2,'Stride',2)
+    
+    convolution2dLayer(2,64,'Padding',1)
+    batchNormalizationLayer
+    reluLayer
+    maxPooling2dLayer(2,'Stride',2)
+     
+    fullyConnectedLayer(1024)
+    dropoutLayer(0.6)
+    batchNormalizationLayer
+    reluLayer
     
     fullyConnectedLayer(10)
     
