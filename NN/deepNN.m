@@ -14,9 +14,9 @@ testY = categorical(d.testY())';
 
 %Augment Data
 imageAugmenter = imageDataAugmenter( ...
-    'RandRotation',[-20,20], ...
-    'RandXTranslation',[-3 3], ...
-    'RandYTranslation',[-3 3])
+    'RandRotation',[-15,15], ...
+    'RandXTranslation',[-2 2], ...
+    'RandYTranslation',[-2 2]);
 
 imageSize = [28 28 1];
 augimds = augmentedImageDatastore(imageSize,trainX,trainY,'DataAugmentation',imageAugmenter);
@@ -26,7 +26,7 @@ augimds = augmentedImageDatastore(imageSize,trainX,trainY,'DataAugmentation',ima
 layers = [
     imageInputLayer([28 28 1])
 
-    convolution2dLayer(4,64,'Padding',1)
+    convolution2dLayer(3,64,'Padding',1)
     batchNormalizationLayer
     reluLayer    
     maxPooling2dLayer(2,'Stride',2)
@@ -36,37 +36,34 @@ layers = [
     reluLayer    
     maxPooling2dLayer(2,'Stride',2)
     
-    convolution2dLayer(2,64,'Padding',1)
-    dropoutLayer(0.6)
+    convolution2dLayer(3,64,'Padding',1)
     batchNormalizationLayer
     reluLayer
     maxPooling2dLayer(2,'Stride',2)
     
-    convolution2dLayer(2,64,'Padding',1)
+    convolution2dLayer(3,64,'Padding',1)
     batchNormalizationLayer
     reluLayer
-    maxPooling2dLayer(2,'Stride',2)
      
-    fullyConnectedLayer(1024)
-    dropoutLayer(0.6)
-    batchNormalizationLayer
-    reluLayer
+%     fullyConnectedLayer(32)
+%     batchNormalizationLayer
+%     reluLayer
     
     fullyConnectedLayer(10)
     
     softmaxLayer
-    classificationLayer];
+    classificationLayer]
 
 %Define training options
 options = trainingOptions('sgdm', ...
-    'MaxEpochs',500, ...
+    'MaxEpochs',30, ...
     'InitialLearnRate',0.03,'LearnRateSchedule','piecewise',...
-    'LearnRateDropPeriod', 1,'LearnRateDropFactor', 0.8,...
-    'L2Regularization',0.0005,...    
+    'LearnRateDropPeriod', 1,'LearnRateDropFactor', 0.75,...
+    'L2Regularization',0.0000,...    
     'Verbose',true, ...
     'ValidationData', {testX,testY},...
-    'ValidationPatience', 50, ...
-    'Plots','training-progress');
+    'ValidationPatience', 500, ...
+    'Plots','training-progress')
 
 %Train network
 net = trainNetwork(augimds,layers,options);
