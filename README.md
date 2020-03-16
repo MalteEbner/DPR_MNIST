@@ -5,4 +5,5 @@ This challenge was part of the course in 'Detection and Pattern Recognition' at 
 The task was to develop a classifier in Matlab to reach maximum accuracy on the MNIST dataset.
 
 The convolutional neural network implemented reached 99.56% accuracy and used data augmentation.
-File containint the main script: https://github.com/MalteEbner/DPR_MNIST/blob/master/NN/deepNN.m
+
+File containing the main script: https://github.com/MalteEbner/DPR_MNIST/blob/master/NN/deepNN.m
